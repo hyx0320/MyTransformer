@@ -1,0 +1,14 @@
+{
+  "test_loss": 2.2100910805165768,
+  "token_accuracy": 0.5947813931816417,
+  "sentence_accuracy": 0.022,
+  "precision": 0.05430124327505107,
+  "recall": 0.056264753749256616,
+  "f1_score": 0.055265563796752744,
+  "correct_tokens": 7659,
+  "total_tokens": 12877,
+  "correct_sentences": 22,
+  "total_sentences": 1000,
+  "total_params": 56434496,
+  "model_size_mb": 215.280517578125
+}
