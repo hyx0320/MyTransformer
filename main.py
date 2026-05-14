@@ -18,6 +18,7 @@ def run_script(script_name):
 if __name__ == "__main__":
     # 按你想要的顺序写在这里
     run_script("train.py")
+    run_script("split_checkpoint.py")
     run_script("test.py")
     run_script("analysis.py")
     run_script("generate_report.py")

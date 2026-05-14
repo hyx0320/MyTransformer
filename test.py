@@ -74,14 +74,40 @@ def main():
         pad_idx=config.pad_idx
     ).to(device)
 
-    # 加载最佳模型
-    checkpoint_path = 'checkpoints/best_model.pth'
-    if os.path.exists(checkpoint_path):
-        checkpoint = torch.load(checkpoint_path, map_location=device)
-        model.load_state_dict(checkpoint['model_state_dict'])
-        print(f"Loaded model from epoch {checkpoint['epoch']} with val loss {checkpoint['loss']:.4f}")
+    # 加载最佳模型，合并切片
+    shard_dir = 'checkpoint/best_model'  # 分片目录
+
+    if os.path.isdir(shard_dir):
+        # 1. 加载元信息（epoch, loss）
+        meta_path = os.path.join(shard_dir, 'training_state.pth')
+        if os.path.exists(meta_path):
+            meta = torch.load(meta_path, map_location=device)
+            epoch = meta.get('epoch')
+            loss = meta.get('loss')
+        else:
+            epoch, loss = None, None
+
+        # 2. 按数字顺序合并所有权重分片
+        state_dict = {}
+        i = 1
+        while True:
+            shard_path = os.path.join(shard_dir, str(i))
+            if not os.path.exists(shard_path):
+                break
+            shard = torch.load(shard_path, map_location=device)
+            state_dict.update(shard)
+            i += 1
+
+        if state_dict:
+            model.load_state_dict(state_dict)
+            if epoch is not None:
+                print(f"Loaded model from {i-1} shards, epoch {epoch}, val loss {loss:.4f}")
+            else:
+                print(f"Loaded model from {i-1} shards (no training meta)")
+        else:
+            print(f"No weight shards found in {shard_dir}, using untrained model.")
     else:
-        print(f"Checkpoint not found at {checkpoint_path}, using untrained model.")
+        print(f"Shard directory {shard_dir} not found, using untrained model.")
 
     # ===== 1. 打印详细的参数分析报告 =====
     print("\n" + "=" * 60)
