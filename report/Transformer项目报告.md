@@ -473,28 +473,54 @@ Transformer 中使用两种掩码：
 
 ```
 MyTransformer/
-├── config.py              # 配置文件（模型参数、训练参数、超参数实验配置）
-├── model.py               # Transformer 模型核心实现
-├── dataset.py             # 数据集加载与预处理
-├── train.py               # 训练脚本
-├── test.py                # 测试与评估脚本
-├── analysis.py            # 参数分析与超参数对比实验
-├── generate_report.py     # 自动生成实验报告
-├── main.py                # 主入口（顺序执行所有脚本）
-├── utils.py               # 工具函数（参数统计、绘图、评估）
-├── checkpoint.py          # 模型断点保存与加载
-├── requirements.txt       # 依赖包列表
+├── README.md                 # 项目说明
+├── requirements.txt          # Python 依赖
+├── main.py                   # 一键运行入口（train → test → analysis → report）
+├── config.py                 # 配置文件（模型参数、训练参数、超参数实验配置）
+├── model.py                  # Transformer 模型核心实现
+├── dataset.py                # 数据集加载与预处理
+├── train.py                  # 训练脚本
+├── test.py                   # 测试与评估脚本
+├── analysis.py               # 参数分析与超参数对比实验
+├── generate_report.py        # 自动生成实验报告
+├── utils.py                  # 工具函数（参数统计、绘图、评估）
+├── checkpoint.py             # 模型断点保存与加载
+├── split_checkpoint.py       # 大模型权重分片工具
+│
 ├── data/
-│   └── Multi30K/          # 数据集（德语→英语平行语料）
-│       ├── train/         # 训练集
-│       ├── valid/         # 验证集
-│       └── test/          # 测试集
-├── checkpoints/           # 模型权重保存
-├── figures/               # 实验图表输出
-├── results/               # 实验报告输出
-├── papers/                # 论文原文与笔记
-├── poster/                # 海报
-└── PPT/                   # 演示文稿
+│   └── Multi30K/             # 数据集（德语→英语平行语料）
+│       ├── train/            # 训练集
+│       ├── valid/            # 验证集
+│       └── test/             # 测试集
+│
+├── checkpoints/              # 模型权重保存目录
+│   ├── best_model.pth        # 最佳验证 Loss 模型
+│   ├── last_model.pth        # 最后一轮模型
+│   └── best_model/           # 分片保存的最佳模型（用于 Git 大文件管理）
+│       ├── 1                 # 权重分片 1
+│       ├── 2                 # 权重分片 2
+│       ├── 3                 # 权重分片 3
+│       └── training_state.pth # 训练元信息（epoch、loss）
+│
+├── figures/                  # 实验图表输出
+│   ├── loss_curve.png        # 训练/验证 Loss 曲线
+│   ├── confusion_matrix_*.png # 混淆矩阵
+│   ├── parameter_scaling.png  # 不同规模参数量对比
+│   ├── param_relationship.png # 参数量与训练时间/显存关系
+│   └── loss_*.png            # 各超参数实验 Loss 曲线
+│
+├── results/
+│   └── experiment_report.md  # 自动生成的实验报告
+│
+├── report/
+│   └── Transformer项目报告.md # 完整项目报告（13章）
+│
+├── papers/                   # 论文原文与笔记
+│   ├── NIPS-2017-attention-is-all-you-need-Paper.pdf
+│   └── NIPS-2017-attention-is-all-you-need-Paper-精读笔记.md
+│
+├── PPT/                      # 课程展示 PPT
+└── poster/                   # 海报
 ```
 
 ### 4.2 各模块功能说明
@@ -509,6 +535,7 @@ MyTransformer/
 | `analysis.py` | 参数分析、超参数对比实验 | `analyze_model_parameters()`, `run_experiments()` |
 | `utils.py` | 工具函数集合 | `count_parameters()`, `plot_loss()`, `evaluate_model()` |
 | `checkpoint.py` | 模型断点管理 | `save_checkpoint()`, `load_checkpoint_for_train()` |
+| `split_checkpoint.py` | 大模型权重分片保存（用于 Git 管理） | `split_checkpoint()` |
 
 ### 4.3 数据流
 
@@ -1154,7 +1181,7 @@ def create_subseq_mask(seq):
 | 赵子仪 | 数据处理（dataset.py）、词表构建、数据预处理 |
 | 赵子仪 | 实验设计与分析（analysis.py）、超参数对比实验 |
 | 赵子仪 | 报告撰写、PPT 制作、结果可视化 |
-| 胡亚鑫| 测试评估（test.py）、预测样例分析、海报制作 |
+| 胡亚鑫 | 测试评估（test.py）、预测样例分析、海报制作 |
 
 ---
 
